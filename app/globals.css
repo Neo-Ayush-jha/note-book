@@ -20,7 +20,7 @@
 }
 
 body {
-  background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: rgb(10 25 47 / 1);
   min-height: 100vh;
   margin: 0;
   font-family: 'Inter', system-ui, sans-serif;
@@ -112,7 +112,7 @@ body {
 }
 
 .note-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: rgb(10 25 47 / 1);
   color: #ffffff;
   border: none;
   border-radius: 1rem;
@@ -130,7 +130,7 @@ body {
 
 .note-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 6px 20px rgba(10 25 47 / 1);
 }
 
 .note-btn:active:not(:disabled) {
