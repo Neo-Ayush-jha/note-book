@@ -39,10 +39,17 @@ export default function Navbar() {
                   <span className="hidden sm:inline">Dashboard</span>
                 </Link>
 
-                <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg text-gray-300">
+                <Link
+                  href="/profile"
+                  className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    pathname === "/profile"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white"
+                  }`}
+                >
                   <User size={18} />
                   <span className="max-w-[150px] truncate">{user.name}</span>
-                </div>
+                </Link>
 
                 <button
                   onClick={logout}
