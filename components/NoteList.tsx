@@ -2,7 +2,7 @@
 
 import { deleteNote, fetchNotes, updateNote } from "@/lib/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Trash2, Calendar, StickyNote, Edit2, Check, X } from "lucide-react";
 
 interface INote {
@@ -13,7 +13,7 @@ interface INote {
   updatedAt: string;
 }
 
-export default function NoteList({ refresh }: { refresh: number }) {
+export default function NoteList({ refresh, searchQuery }: { refresh: number; searchQuery: string }) {
   const queryClient = useQueryClient();
   const [notes, setNotes] = useState<INote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,6 +34,17 @@ export default function NoteList({ refresh }: { refresh: number }) {
   useEffect(() => {
     fetchNotesData();
   }, [refresh]);
+
+  // Filter notes based on search query
+  const filteredNotes = useMemo(() => {
+    if (!searchQuery.trim()) return notes;
+    
+    const query = searchQuery.toLowerCase();
+    return notes.filter(note => 
+      note.title.toLowerCase().includes(query) || 
+      note.content.toLowerCase().includes(query)
+    );
+  }, [notes, searchQuery]);
 
   async function handleDelete(id: string) {
     await deleteNote(id);
@@ -59,18 +70,37 @@ export default function NoteList({ refresh }: { refresh: number }) {
     fetchNotesData();
   }
 
-  if (loading) return <p style={{ color: "#f6eaea", textAlign: "center" }}>Loading notes...</p>;
-  if (notes.length === 0)
+  if (loading) {
     return (
-      <div style={{ textAlign: "center", padding: "2rem" }}>
-        <StickyNote size={48} style={{ color: "#b8b8b8", margin: "0 auto 1rem" }} />
-        <p style={{ color: "#b8b8b8", fontSize: "1.1rem" }}>No notes yet. Create your first note!</p>
+      <div className="text-center py-12">
+        <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
+        <p className="text-gray-300 mt-4">Loading notes...</p>
       </div>
     );
+  }
+
+  if (notes.length === 0) {
+    return (
+      <div className="text-center py-12 bg-gray-800/50 rounded-2xl border border-gray-700">
+        <StickyNote size={48} className="text-gray-500 mx-auto mb-4" />
+        <p className="text-gray-400 text-lg">No notes yet. Create your first note!</p>
+      </div>
+    );
+  }
+
+  if (filteredNotes.length === 0) {
+    return (
+      <div className="text-center py-12 bg-gray-800/50 rounded-2xl border border-gray-700">
+        <StickyNote size={48} className="text-gray-500 mx-auto mb-4" />
+        <p className="text-gray-400 text-lg">No notes found matching "{searchQuery}"</p>
+        <p className="text-gray-500 text-sm mt-2">Try a different search term</p>
+      </div>
+    );
+  }
 
   return (
     <ul className="note-list">
-      {notes.map((note) => (
+      {filteredNotes.map((note) => (
         <li key={note._id} className="note-item">
           {editingId === note._id ? (
             <div className="note-edit-form">
